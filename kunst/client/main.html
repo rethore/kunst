@@ -3,14 +3,52 @@
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
-  {{> info}}
+  <div class="container">
+  <h1>Kunst.Svalin</h1>
+  {{! > hello}}
+  {{! > info}}
+  <div class="row">
+    <div class="col-md-4">
+      {{> sunshow}}
+    </div>
+    <div class="col-md-4">
+      {{> rungame}}
+    </div>
+  </div>
+  </div>
 </body>
 
+<template name="sunshow">
+
+  <div class="panel panel-default">
+  <div class="panel-heading">Solceller show</div>
+  <div class="panel-body">
+    <button class="btn btn-primary {{disabled}}">Go!</button>
+  </div>
+  </div>
+
+</template>
+
+<template name="rungame">
+  <div class="panel panel-default">
+  <div class="panel-heading">Running game</div>
+  <div class="panel-body">
+    <label>Speed</label>
+    <div class="input-group">
+      <input id="speed" type="number" class="form-control" value="8" aria-describedby="basic-addon2">
+      <span class="input-group-addon" id="basic-addon2">km/h</span>
+    </div>
+    <label>N tours</label>
+    <input id="tours" type="number" class="form-control" value="2" aria-describedby="basic-addon2">
+    <br>
+    <button class="btn btn-primary {{disabled}}" type="button">Run!</button>
+  </div>
+</div>
+
+</template>
+
 <template name="hello">
-  <button>Click Me</button>
+  <button class="btn">Click Me</button>
   <p>You've pressed the button {{counter}} times.</p>
 </template>
 
