@@ -3,20 +3,34 @@
 </head>
 
 <body>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <div class="container">
-  <h1>Kunst.Svalin</h1>
+  <h1>kunst@svalin</h1>
   {{! > hello}}
   {{! > info}}
+  {{> production }}
   <div class="row">
     <div class="col-md-4">
-      {{> sunshow}}
+      {{> sunshow }}
     </div>
     <div class="col-md-4">
-      {{> rungame}}
+      {{> rungame }}
+    </div>
+    <div class="col-md-4">
+      {{> lamps }}
     </div>
   </div>
   </div>
 </body>
+
+<template name="production">
+<div class="panel panel-default">
+  <div class="panel-heading">Solceller Production</div>
+  <div class="panel-body">
+  <iframe width="100%" height="400" frameborder="0" scrolling="no" src="https://plot.ly/~piredtu/30.embed"></iframe>
+  </div>
+</div>
+</template>
 
 <template name="sunshow">
 
@@ -60,4 +74,16 @@
     <li><a href="https://docs.meteor.com">Read the Docs</a></li>
     <li><a href="https://forums.meteor.com">Discussions</a></li>
   </ul>
+</template>
+
+<template name="lamps">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+    Current active lamps
+  </div>
+  <div class="panel-body">
+
+  </div>
+  </div>
 </template>

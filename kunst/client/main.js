@@ -1,8 +1,11 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Hue } from '../imports/api/hue.js';
 
 import './main.html';
 
+
+const IP = 'ip322.alb283.cust.comxnet.dk:6785';
 
 Template.hello.onCreated(function helloOnCreated() {
   // counter starts at 0
@@ -22,47 +25,42 @@ Template.hello.events({
   },
 });
 
-Template.sunshow.onCreated(function sunshowOnCreaded(){
-  this.in_use = new ReactiveVar(false);
-});
-
 Template.sunshow.helpers({
-  disabled() {return (Template.instance().in_use.get())? "disabled" : ""}
+  disabled() {return (Hue.findOne({name:'active'}))? (Hue.findOne({name:'active'}).val)? "disabled" : "" : ""}
 });
 
 Template.sunshow.events({
   'click button'(event, instance){
-    instance.in_use.set(true);
+    Meteor.call("hue.activate");
     //event.preventDefaults();
-    HTTP.get("http://81.161.138.239:6785/sun", function(error, result){
+    HTTP.get(`http://${IP}/sun`, function(error, result){
       if(error){
         console.log("error", error);
       }
       if(result){
          console.log("result", result)
          if (result.content === "done") {
-           instance.in_use.set(false);
+           Meteor.call("hue.deactivate");
          }
       }
     });
   },
 })
 
-Template.rungame.onCreated(function rungameOnCreaded(){
-  this.in_use = new ReactiveVar(false);
-});
+
 
 
 Template.rungame.helpers({
-  disabled() {return (Template.instance().in_use.get())? "disabled" : ""}
+    disabled() {return (Hue.findOne({name:'active'}))?
+        (Hue.findOne({name:'active'}).val)? "disabled" : "" : ""}
 });
 
 Template.rungame.events({
   'click button'(event, instance){
-    instance.in_use.set(true);
+    Meteor.call("hue.activate");
     let speed = $('#speed').val();
     let tours = $('#tours').val();
-    let url = `http://81.161.138.239:6785/run/${speed}/${tours}`;
+    let url = `http://${IP}/run/${speed}/${tours}`;
     console.log(event, instance, url, speed);
     //event.preventDefaults();
     HTTP.get(url, function(error, result){
@@ -72,9 +70,15 @@ Template.rungame.events({
       if(result){
          console.log("result", result)
          if (result.content === "done") {
-           instance.in_use.set(false);
+           Meteor.call("hue.deactivate");
          }
       }
     });
   },
 })
+
+Template.lamps.events({
+  'click .glyphicon-refresh'(event, instance){
+      console.log('click!');
+  }
+});
