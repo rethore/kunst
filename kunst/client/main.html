@@ -44,7 +44,7 @@
 
 <template name="sunshow">
 
-  <div class="panel panel-default">
+  <div class="panel {{panelstatus}}">
   <div class="panel-heading">Solceller show</div>
   <div class="panel-body">
     <button class="btn btn-primary {{disabled}} defaultshow">Go!</button>
@@ -69,7 +69,7 @@
 </template>
 
 <template name="rungame">
-  <div class="panel panel-default">
+  <div class="panel  {{panelstatus}}">
   <div class="panel-heading">Running game</div>
   <div class="panel-body">
     <label>Speed</label>
@@ -104,11 +104,17 @@
 <template name="lamps">
   <div class="panel panel-default">
   <div class="panel-heading">
-    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-    Current active lamps
+    Direct Control
   </div>
   <div class="panel-body">
-
+    <div class="container">
+      <button class="btn btn-success" id="on">ON</button>
+      <button class="btn btn-danger" id="off">OFF</button>
+    </div>
+    <br>
+    <div class="container">
+      <button class="btn btn-primary" id="reactivate">Reactivate</button>
+    </div>
   </div>
   </div>
 </template>

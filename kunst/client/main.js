@@ -152,7 +152,6 @@ var colormaps = [{cname:"gist_gray"},
 
 Session.setDefault("date", [4,4,2016]);
 
-
 Template.hello.onCreated(function helloOnCreated() {
   // counter starts at 0
   this.counter = new ReactiveVar(0);
@@ -206,7 +205,8 @@ Template.production.events({
 
 Template.sunshow.helpers({
   disabled() {return (Hue.findOne({name:'active'}))? (Hue.findOne({name:'active'}).val)? "disabled" : "" : ""},
-  colormaps: colormaps
+  panelstatus() {return (Hue.findOne({name:'active'}))? (Hue.findOne({name:'active'}).panel == 'sunshow')? "panel-success" : "panel-default" : "panel-default"},
+  colormaps: colormaps,
 });
 
 Template.sunshow.events({
@@ -222,12 +222,11 @@ Template.sunshow.events({
   },
 })
 
-
-
-
 Template.rungame.helpers({
     disabled() {return (Hue.findOne({name:'active'}))?
-        (Hue.findOne({name:'active'}).val)? "disabled" : "" : ""}
+        (Hue.findOne({name:'active'}).val)? "disabled" : "" : ""},
+    panelstatus() {return (Hue.findOne({name:'active'}))?
+        (Hue.findOne({name:'active'}).panel == 'rungame')? "panel-success" : "panel-default" : "panel-default"},
 });
 
 Template.rungame.events({
@@ -242,5 +241,8 @@ Template.rungame.events({
 Template.lamps.events({
   'click .glyphicon-refresh'(event, instance){
       console.log('click!');
-  }
+  },
+  'click #reactivate'(event, instance){Meteor.call("hue.deactivate")},
+  'click #on'(event, instance){Meteor.call('on')},
+  'click #off'(event, instance){Meteor.call('off')},
 });

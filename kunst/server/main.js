@@ -15,24 +15,24 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
-  'hue.activate'(){
+  'hue.activate'(state='none'){
     let hue_status = Hue.findOne({name:'active'})
     if (hue_status) {
-      Hue.update({name:'active'}, {$set:{val:true}});
+      Hue.update({name:'active'}, {$set:{val:true, panel:state}});
     } else {
-      Hue.insert({name:'active', val:true});
+      Hue.insert({name:'active', val:true, panel:state});
     }
   },
   'hue.deactivate'(){
     let hue_status = Hue.findOne({name:'active'})
     if (hue_status) {
-      Hue.update({name:'active'}, {$set:{val:false}});
+      Hue.update({name:'active'}, {$set:{val:false, panel:'none'}});
     } else {
-      Hue.insert({name:'active', val:false});
+      Hue.insert({name:'active', val:false, panel:'none'});
     }
   },
   'sunshow'(cmap){
-    Meteor.call("hue.activate");
+    Meteor.call("hue.activate", 'sunshow');
     //event.preventDefaults();
       HTTP.get(`http://${IP}/sun/${cmap}`, function(error, result){
         if(error){
@@ -47,7 +47,7 @@ Meteor.methods({
       });
   },
   'rungame'(speed, tours){
-    Meteor.call("hue.activate");
+    Meteor.call("hue.activate", 'rungame');
     let url = `http://${IP}/run/${speed}/${tours}`;
     console.log(event, instance, url, speed);
     HTTP.get(url, function(error, result){
@@ -63,7 +63,7 @@ Meteor.methods({
     });
   },
   'download'(day, month, year){
-    Meteor.call("hue.activate");
+    Meteor.call("hue.activate", 'download');
     let url = `http://${IP}/download/${day}/${month}/${year}`;
     HTTP.get(url, function(error, result){
       if(error){
@@ -80,6 +80,37 @@ Meteor.methods({
          Meteor.call("hue.deactivate");
       }
     });
-  }
-
+  },
+  'on'(){
+    let url = `http://${IP}/on`;
+    HTTP.get(url, function(error, result){
+      if(error){
+        console.log("error", error);
+      }
+      if(result){
+         console.log("result", result)
+         if (result.content == 'done') {
+           console.log('plot detected:', result.content)
+         } else {
+           console.log('error:', result)
+         }
+      }
+    });
+  },
+  'off'(){
+    let url = `http://${IP}/off`;
+    HTTP.get(url, function(error, result){
+      if(error){
+        console.log("error", error);
+      }
+      if(result){
+         console.log("result", result)
+         if (result.content == 'done') {
+           console.log('lights are off', result.content)
+         } else {
+           console.log('error:', result)
+         }
+      }
+    });
+  },
 });
