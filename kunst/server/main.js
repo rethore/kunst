@@ -113,4 +113,20 @@ Meteor.methods({
       }
     });
   },
+  'effect'(effect_type){
+    let url = `http://${IP}/effect/${effect_type}`;
+    HTTP.get(url, function(error, result){
+      if(error){
+        console.log("error", error);
+      }
+      if(result){
+         console.log("result", result)
+         if (result.content == 'done') {
+           console.log('lights effect is changed', result.content)
+         } else {
+           console.log('error:', result)
+         }
+      }
+    });
+  },
 });

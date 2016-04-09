@@ -245,4 +245,12 @@ Template.lamps.events({
   'click #reactivate'(event, instance){Meteor.call("hue.deactivate")},
   'click #on'(event, instance){Meteor.call('on')},
   'click #off'(event, instance){Meteor.call('off')},
+  'click #none'(event, instance){
+      event.preventDefault();
+      console.log('click!');
+      Meteor.call('effect','none');},
+  'click #colorloop'(event, instance){
+      event.preventDefault();
+      Meteor.call('effect','colorloop');
+    },
 });
