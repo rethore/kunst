@@ -213,12 +213,14 @@ Template.sunshow.events({
   'click .cmap'(event, instance){
     event.preventDefault();
     let cmap=event.target.id;
-    Meteor.call("sunshow", cmap);
+    let [day, month, year] = Session.get('date')
+    Meteor.call("sunshow", cmap, day, month, year);
   },
   'click .defaultshow'(event, instance){
     event.preventDefault();
     let cmap='hot';
-    Meteor.call("sunshow", cmap);
+    let [day, month, year] = Session.get('date')
+    Meteor.call("sunshow", cmap, day, month, year);
   },
 })
 

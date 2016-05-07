@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Hue } from '../imports/api/hue.js';
 
-const IP = 'ip322.alb283.cust.comxnet.dk:6785';
-
+//const IP = 'ip322.alb283.cust.comxnet.dk:6785';
+const IP = 'localhost:6001'
 
 Meteor.startup(() => {
   // code to run on server at startup
@@ -31,10 +31,10 @@ Meteor.methods({
       Hue.insert({name:'active', val:false, panel:'none'});
     }
   },
-  'sunshow'(cmap){
+  'sunshow'(cmap, day, month, year){
     Meteor.call("hue.activate", 'sunshow');
     //event.preventDefaults();
-      HTTP.get(`http://${IP}/sun/${cmap}`, function(error, result){
+      HTTP.get(`http://${IP}/sun/${cmap}/${day}/${month}/${year}`, function(error, result){
         if(error){
           console.log("error", error);
         }
