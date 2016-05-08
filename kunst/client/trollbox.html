@@ -1,0 +1,12 @@
+<template name="trollbox">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Poloniex trollbox
+    </div>
+    <div class="panel-body">
+      {{#each myHelper}}
+        <div>{{name}}: {{message}}</div>
+      {{/each}}
+    </div>
+  </div>
+</template>

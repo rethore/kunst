@@ -152,6 +152,16 @@ var colormaps = [{cname:"gist_gray"},
 
 Session.setDefault("date", [4,4,2016]);
 
+
+
+Meteor.startup(() => {
+  $('#my-datepicker').val(Session.get('date'))
+})
+
+Template.body.onCreated(function bodyOnCreated() {
+  Meteor.subscribe('hue');
+});
+
 Template.hello.onCreated(function helloOnCreated() {
   // counter starts at 0
   this.counter = new ReactiveVar(0);
@@ -172,6 +182,8 @@ Template.hello.events({
 
 Template.production.rendered=function() {
 	$('#my-datepicker').datepicker({format: "d/m/yyyy"});
+  let [day, month, year] = Session.get('date')
+  $('#my-datepicker').val(`${day}/${month}/${year}`)
 }
 
 Template.production.helpers({
@@ -206,6 +218,11 @@ Template.production.events({
 Template.sunshow.helpers({
   disabled() {return (Hue.findOne({name:'active'}))? (Hue.findOne({name:'active'}).val)? "disabled" : "" : ""},
   panelstatus() {return (Hue.findOne({name:'active'}))? (Hue.findOne({name:'active'}).panel == 'sunshow')? "panel-success" : "panel-default" : "panel-default"},
+  date() {
+    let a = Hue.findOne({name:'active'});
+    let [day, month, year] = Session.get('date');
+    return (a)? (a.val)? a.data : {day, month, year} : {day, month, year};
+  },
   colormaps: colormaps,
 });
 
@@ -255,4 +272,9 @@ Template.lamps.events({
       event.preventDefault();
       Meteor.call('effect','colorloop');
     },
+});
+
+Template.lamps.helpers({
+  huecontrol: () => Hue.findOne({name:'heartbeat'}).val,
+  panelstatus: () => (Hue.findOne({name:'heartbeat'}))? (Hue.findOne({name:'heartbeat'}).val)? "panel-success" : "panel-danger" : "panel-warning",
 });

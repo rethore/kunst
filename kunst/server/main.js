@@ -1,8 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Hue } from '../imports/api/hue.js';
+import { HTTP } from 'meteor/http';
 
 //const IP = 'ip322.alb283.cust.comxnet.dk:6785';
 const IP = 'localhost:6001'
+
+Meteor.publish('hue', function hue() {
+    return Hue.find();
+});
 
 Meteor.startup(() => {
   // code to run on server at startup
@@ -12,27 +17,33 @@ Meteor.startup(() => {
   if (!Hue.findOne({name:'url'})) {
     Hue.insert({name:'url', url:'https://plot.ly/~piredtu/36'});
   }
+
+  // Init active
+  Hue.remove({name:'active'});
+  Hue.insert({name:'active', val:false, panel:'none', data:{}});
+
+  // Init heartbeat
+  Hue.remove({name:'heartbeat'});
+  var hb_id = Hue.insert({name:'heartbeat', val:false});
+  Meteor.setInterval(
+    ()=>HTTP.get(`http://${IP}/heartbeat`, {timeout:1000},
+      (e,r)=>{
+        if (e) Hue.update(hb_id, {name:'heartbeat', val:false})
+        else if (r.content==='alive') Hue.update(hb_id, {name:'heartbeat', val:true})
+          else Hue.update(hb_id, {name:'heartbeat', val:false})
+      }),
+    10000.0);
 });
 
 Meteor.methods({
-  'hue.activate'(state='none'){
-    let hue_status = Hue.findOne({name:'active'})
-    if (hue_status) {
-      Hue.update({name:'active'}, {$set:{val:true, panel:state}});
-    } else {
-      Hue.insert({name:'active', val:true, panel:state});
-    }
+  'hue.activate'(state='none', data={}){
+      Hue.update({name:'active'}, {$set:{val:true, panel:state, data}});
   },
   'hue.deactivate'(){
-    let hue_status = Hue.findOne({name:'active'})
-    if (hue_status) {
-      Hue.update({name:'active'}, {$set:{val:false, panel:'none'}});
-    } else {
-      Hue.insert({name:'active', val:false, panel:'none'});
-    }
+      Hue.update({name:'active'}, {$set:{val:false, panel:'none', data:{}}});
   },
   'sunshow'(cmap, day, month, year){
-    Meteor.call("hue.activate", 'sunshow');
+    Meteor.call("hue.activate", 'sunshow', {day, month, year});
     //event.preventDefaults();
       HTTP.get(`http://${IP}/sun/${cmap}/${day}/${month}/${year}`, function(error, result){
         if(error){
@@ -47,9 +58,9 @@ Meteor.methods({
       });
   },
   'rungame'(speed, tours){
-    Meteor.call("hue.activate", 'rungame');
+    Meteor.call("hue.activate", 'rungame', {speed, tours});
     let url = `http://${IP}/run/${speed}/${tours}`;
-    console.log(event, instance, url, speed);
+    console.log(speed, tours, url);
     HTTP.get(url, function(error, result){
       if(error){
         console.log("error", error);
@@ -63,7 +74,7 @@ Meteor.methods({
     });
   },
   'download'(day, month, year){
-    Meteor.call("hue.activate", 'download');
+    Meteor.call("hue.activate", 'download', {day, month, year});
     let url = `http://${IP}/download/${day}/${month}/${year}`;
     HTTP.get(url, function(error, result){
       if(error){
