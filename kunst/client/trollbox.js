@@ -14,7 +14,7 @@ Template.trollbox.onCreated(function() {
     const doc = {
       type: args[0],
       id: args[1],
-      name: args[2],
+      name: args[2], 
       message: args[3]
     }
     console.log('new item', doc)
