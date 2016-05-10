@@ -3,7 +3,8 @@ from hue_show import *
 from sunny import *
 from threading import Thread
 from time import sleep
-
+import os
+import json
 from flask.ext.cors import CORS
 
 app = Flask(__name__)
@@ -13,8 +14,8 @@ CORS(app)
 b = init_bridge()
 
 # Load the sunny portal credential
-cdir = os.path.dirname(os.path.realpath(__file__))
-with open(cdir+'/.sunny_cred', 'r') as f:
+
+with open(os.environ['HOME']+'/.sunny_cred', 'r') as f:
     cred = json.load(f)
 
 @app.route('/')
@@ -43,18 +44,23 @@ def run(speed, tours):
 
 @app.route('/on')
 def on():
-    for j in range(19):
-        name = 'P%d'%(j+1)
-        b.lights_by_name[name].on = True
-    normal(b)
+    for i in range(4):
+        for j in range(19):
+            name = 'P%d'%(j+1)
+            b.lights_by_name[name].on = True
+            sleep(0.1)
+        normal(b)
+        time.sleep(0.5)
     return "done"
 
 @app.route('/off')
 def off():
-    for j in range(19):
-        name = 'P%d'%(j+1)
-        b.lights_by_name[name].on = False
-        sleep(0.4)
+    for i in range(4):
+        for j in range(19):
+            name = 'P%d'%(j+1)
+            b.lights_by_name[name].on = False
+            sleep(0.1)
+        sleep(0.5)
     return "done"
 
 @app.route('/effect/<effect_type>')
