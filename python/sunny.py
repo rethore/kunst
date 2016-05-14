@@ -30,7 +30,7 @@ houses = {
     2: 'Svalin_227',
     3: 'Svalin_225',
     4: 'Toppen 223',
-    #5: 'Svalin_221',
+    5: 'Svalin_221',
     6: 'Svalin_219',
     #7: 'Svalin_217',
     8: 'Svalin_215',
@@ -60,7 +60,7 @@ TIME_DELAY = 20 # [sec]
 class Sunny(object):
     def __init__(self, login, password):
         self.start_display()
-        
+
         profile = webdriver.FirefoxProfile()
         profile.set_preference('browser.download.folderList', 2) # custom location
         profile.set_preference('browser.download.manager.showWhenStarting', False)
@@ -72,7 +72,7 @@ class Sunny(object):
         self.login(login, password)
         self._login = login
         self._password = password
-        
+
     def start_display(self):
         self.display = Display(visible=0, size=(800, 600))
         self.display.start()
@@ -173,7 +173,7 @@ class Sunny(object):
         """
         el = self.wait_n_get(By.ID, id)
         el.click()
-        
+
     def select_date(self, day, month, year):
         id_date =    'ctl00_ContentPlaceHolder1_UserControlShowDashboard1_UserControlShowEnergyAndPower1__datePicker_textBox'
         id_before =  'ctl00_ContentPlaceHolder1_UserControlShowDashboard1_UserControlShowEnergyAndPower1_btn_prev'
@@ -191,8 +191,8 @@ class Sunny(object):
                 print(e)
                 print('trying again!')
                 self.select_date(day, month, year)
-                             
-        
+
+
 
     def download(self, day=None, month=None, year=None):
         """Download the CSV file
@@ -201,7 +201,7 @@ class Sunny(object):
         tabactive = self.wait_n_get(By.CLASS_NAME, 'tabactive')
         if not tabactive.text == 'Day':
             self.click(id_day)
-            
+
         # Select the right day
         if day:
             self.select_date(day, month, year)
@@ -312,7 +312,7 @@ class Sunny(object):
     def img(self):
         """A simple screenshot function to show on the notebook"""
         return Image(self.driver.get_screenshot_as_png())
-    
+
     def download_all(self, day=None, month=None, year=None):
         df_dict = {}
         for k, v in houses.items():
@@ -322,7 +322,7 @@ class Sunny(object):
                 df_dict['House %d'%(k)] = df
         # Save the data into a DataFrame
         self.data = pd.DataFrame({k:v.power for k, v in df_dict.items() if isinstance(v, pd.DataFrame)}, index=df.index)
-        
+
         # Save the data into a file
         m,d,y = self.date.split('/')
         self.data.to_csv('svalin_%s_%s_%s.csv'%(d,m,y))
@@ -336,12 +336,12 @@ if __name__ == '__main__':
     cdir = os.path.dirname(os.path.realpath(__file__))
     with open(cdir+'/.sunny_cred', 'r') as f:
         cred = json.load(f)
-        
+
     s = Sunny(login = cred['login'], password = cred['password'])
-    
+
     df = s.download_all()
     s.close()
-    
+
     # Now plotting
     import cufflinks as cf
     df.iplot(y=[k for k in df.keys() if 'House' in k], kind='line', layout={
