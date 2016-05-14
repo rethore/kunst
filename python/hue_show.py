@@ -23,11 +23,11 @@ def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     sleep(DT)    
 
 def all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
-    for i in range(4):
-        for j in range(19):
-            name = 'P%d'%(j+1)
-            rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
-        sleep(0.5)
+    #for i in range(4):
+    for j in range(19):
+        name = 'P%d'%(j+1)
+        rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
+        #sleep(0.5)
     
 def normal(b):
     all_rgb(b, 1.0, 1.0, 1.0)    

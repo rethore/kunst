@@ -30,8 +30,8 @@ def random_show():
 
 
 start = 20.0
-for i in range(14):
-    c = start + i * 0.25
+for i in range(7):
+    c = start + i * 0.5
     v = "{}:{:02d}".format(int(c), int((c-np.floor(c))*60.)+1)
     print(v)
     schedule.every().day.at(v).do(random_show)
