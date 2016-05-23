@@ -14,13 +14,13 @@ import click
 
 c = Converter()
 mapxy = lambda colormap: lambda val: c.rgbToCIE1931(*plt.get_cmap(colormap)(val)[:3])
-    
+
 def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     l.on = True
     l.brightness = brightness
     l.transitiontime = transitiontime
     l.xy = c.rgbToCIE1931(R, G, B)
-    sleep(DT)    
+    sleep(DT)
 
 def all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     #for i in range(4):
@@ -28,9 +28,9 @@ def all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
         name = 'P%d'%(j+1)
         rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
         #sleep(0.5)
-    
+
 def normal(b):
-    all_rgb(b, 1.0, 1.0, 1.0)    
+    all_rgb(b, 1.0, 1.0, 1.0)
 
 def init_bridge(ip=None):
     bridges = req.get('https://www.meethue.com/api/nupnp').json()
@@ -50,9 +50,9 @@ def init_bridge(ip=None):
 
     return b
 
-        
-    
-def show(data, ip=None, cmap='hot', dt=0.01, b=None):    
+
+
+def show(data, ip=None, cmap='hot', dt=0.01, b=None):
     print(data, ip, cmap)
     if b == None:
         b = init_bridge(ip)
@@ -70,8 +70,8 @@ def show(data, ip=None, cmap='hot', dt=0.01, b=None):
         j += 1
         if j >= len(hs):
             j = 0
-        P2H[n] = house_name 
-        
+        P2H[n] = house_name
+
     normal(b)
 
     # Run the show
@@ -92,8 +92,8 @@ def show(data, ip=None, cmap='hot', dt=0.01, b=None):
             except Exception as e:
                 print(e)
     normal(b)
-    
-    
+
+
 def run_game(speed, n_tours=1, ip=None, b=None):
     if b == None:
         b = init_bridge(ip)
@@ -114,7 +114,27 @@ def run_game(speed, n_tours=1, ip=None, b=None):
             except Exception as e:
                 print(e)
 
-
+def wave_effect(hn):
+    """Make a wave effect starting from a house number
+    Parameters
+    ----------
+    hn: int
+        house number
+    """
+    # propagation speed
+    speed = 20 # m/s
+    distance = 7 #m between each lamp
+    time = 7 / (speed * 1E3 / (60*60))
+    for n in range(9):
+        try:
+            name = "P%d"%((hn+2*n+1)%(19))
+            l = b.lights_by_name[name]
+            rgbl(l, 1.0,0.0,0.0, brightness=254)
+            sleep(time)
+            rgbl(l, 1.,1.,1., brightness=254)
+            sleep(0.1)
+        except Exception as e:
+            print(e)
 
 @click.command()
 @click.option('--data', help='CSV file of the house solar production')
@@ -123,7 +143,7 @@ def run_game(speed, n_tours=1, ip=None, b=None):
 @click.option('--dt', default=0.01, help='Time step inbetween each color change')
 def command(data, ip, cmap, dt):
     show(data, ip, cmap, dt)
-    
-            
+
+
 if __name__ == '__main__':
-    command() 
+    command()
