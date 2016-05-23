@@ -66,16 +66,28 @@ def random_show():
         print('Sunshow failed: {}', str(e))
     return
 
+def try_on():
+    try:
+        on()
+    except Exception as e:
+        print('on failed', str(e))
+
+def try_off():
+    try:
+        off()
+    except Exception as e:
+        print('off failed', str(e))
+
 ### Setting up all the schedules -----------------------------------------------
 
 # Schedule to download the PV data
 schedule.every().day.at("23:50").do(download_PV_data)
 
 # Schedule light to switch on
-schedule.every().day.at("20:00").do(on)
+schedule.every().day.at("20:00").do(try_on)
 
 # Schedule light to switch off
-schedule.every().day.at("7:30").do(off)
+schedule.every().day.at("7:30").do(try_off)
 
 # Add all the shows
 start = 20.0
