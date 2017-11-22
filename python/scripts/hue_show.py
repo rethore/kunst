@@ -73,7 +73,7 @@ def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     l.brightness = brightness
     l.transitiontime = transitiontime
     l.xy = c.rgbToCIE1931(R, G, B)
-    set_xy(l.name, c.rgbToCIE1931(1., 1., 1.))
+    set_xy(l.name, c.rgbToCIE1931(R, G, B))
     sleep(DT)
 
 
