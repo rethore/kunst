@@ -1,0 +1,15 @@
+flask
+phue
+numpy
+scipy
+pandas
+plotly
+cufflinks
+click
+selenium
+selenium-requests
+pyvirtualdisplay
+matplotlib
+jupyter
+flask_cors
+pymongo

@@ -3,7 +3,7 @@ import { Hue } from '../imports/api/hue.js';
 import { HTTP } from 'meteor/http';
 
 //const IP = 'ip322.alb283.cust.comxnet.dk:6785';
-const IP = 'localhost:6001'
+const IP = 'python:6001'
 
 Meteor.publish('hue', function hue() {
     return Hue.find();
@@ -15,7 +15,7 @@ Meteor.startup(() => {
   // Set the backend python as inactive
   Meteor.call('hue.deactivate');
   if (!Hue.findOne({name:'url'})) {
-    Hue.insert({name:'url', url:'https://plot.ly/~piredtu/36'});
+    Hue.insert({name:'url', url:'https://plot.ly/~piredtu/36.embed'});
   }
 
   // Init active

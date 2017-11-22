@@ -1,0 +1,39 @@
+version: "3"
+services:
+  meteor:
+    build:
+      context: kunst
+      dockerfile: Dockerfile
+    ports:
+      - "8180:3000"
+    links:
+      - mongo
+      - python
+    environment:
+      - MONGO_URL=mongodb://mongo
+      - ROOT_URL=http://127.0.0.1:80
+      - STARTUP_DELAY=10
+    #  - MAIL_URL=smtp://some.mailserver.com:25
+
+  python:
+    build:
+      context: python
+      dockerfile: Dockerfile
+    ports:
+      - "6001:6001"
+    volumes:
+      - ./python/data:/data
+      - ./python/scripts:/app
+    environment:
+      - PLOTLY_CRED=${PLOTLY_CRED}
+      - HUE_CRED=${HUE_CRED}
+      - HUE_IP=${HUE_IP}
+      - SUNNY_LOGIN=${SUNNY_LOGIN}
+      - SUNNY_PASSWORD=${SUNNY_PASSWORD}
+      - C02_AUTH=${C02_AUTH}
+      - DATA_DIR=/data
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"    

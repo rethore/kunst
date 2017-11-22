@@ -272,6 +272,10 @@ Template.lamps.events({
       event.preventDefault();
       Meteor.call('effect','colorloop');
     },
+  'click #carbon'(event, instance){
+      event.preventDefault();
+      Meteor.call('effect','carbon');
+    },    
 });
 
 Template.lamps.helpers({

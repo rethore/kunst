@@ -5,7 +5,7 @@
     "start": "meteor run"
   },
   "dependencies": {
-    "autobahn": "^0.9.9",
+    "babel-runtime": "^6.26.0",
     "bufferutil": "^1.2.1",
     "meteor-node-stubs": "~0.2.0",
     "utf-8-validate": "^1.2.1"
