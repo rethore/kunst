@@ -1,9 +1,10 @@
 version: "3"
 services:
   meteor:
-    build:
-      context: kunst
-      dockerfile: Dockerfile
+    image: piredtu/kunst_meteor
+    #build:
+    #  context: kunst
+    #  dockerfile: Dockerfile
     ports:
       - "8180:3000"
     links:
@@ -16,9 +17,10 @@ services:
     #  - MAIL_URL=smtp://some.mailserver.com:25
 
   python:
-    build:
-      context: python
-      dockerfile: Dockerfile
+    image: piredtu/kunst_python
+    #build:
+    #  context: python
+    #  dockerfile: Dockerfile
     ports:
       - "6001:6001"
     volumes:
@@ -31,9 +33,9 @@ services:
       - SUNNY_LOGIN=${SUNNY_LOGIN}
       - SUNNY_PASSWORD=${SUNNY_PASSWORD}
       - C02_AUTH=${C02_AUTH}
-      - DATA_DIR=/data
+      - DATA_DIR=/data/
 
   mongo:
     image: mongo:latest
     ports:
-      - "27017:27017"    
+      - "27017:27017"
