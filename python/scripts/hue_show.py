@@ -169,7 +169,7 @@ def run_game(speed, n_tours=1, ip=None, b=None):
             except Exception as e:
                 print(e)
 
-def get_carbon_color(c02auth=c02auth):
+def get_carbon_color(c02auth=c02auth, carbon_scaling=500):
     g.carbon_time = datetime.now()
     response = req.get('https://api.co2signal.com/v1/latest?countryCode=DK', headers={'auth-token': c02auth})
     resp = response.json()
@@ -178,15 +178,14 @@ def get_carbon_color(c02auth=c02auth):
     set_carbon_state(data)
 
     carbon = data['carbonIntensity']
-    carbon_scaling = 650
     return carbon, min(carbon/carbon_scaling, 1.0)
 
 
-def carbon_color(c02auth=c02auth, b=None, ip=None, username=None):
+def carbon_color(c02auth=c02auth, b=None, ip=None, username=None, cmap='RdYlGn'):
     if b == None:
         b = init_bridge(ip, username)
     carbon, carbon_scaled = get_carbon_color(c02auth)
-    R, G, B, dumb = plt.get_cmap('hot')(1.0-carbon_scaled)
+    R, G, B, dumb = plt.get_cmap(cmap)(1.0-carbon_scaled)
     all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.5)
     print('carbon', carbon, carbon_scaled)
     return carbon, carbon_scaled
