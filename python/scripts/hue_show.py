@@ -13,6 +13,8 @@ from random import shuffle
 from datetime import datetime
 from flask import g
 import click
+from light_lib import env_or_else
+
 from pymongo import MongoClient
 mongo = MongoClient('mongo', 27017)
 db_state = mongo.state_db
@@ -21,9 +23,16 @@ states = db_state.states
 c = Converter()
 mapxy = lambda colormap: lambda val: c.rgbToCIE1931(*plt.get_cmap(colormap)(val)[:3])
 
+DEFAULT_MIN_CARBON = 150
+DEFAULT_MAX_CARBON = 500
 
-c02auth = os.environ['C02_AUTH'] if 'C02_AUTH' in os.environ else None
+# Get options from environmental variables
+c02auth = env_or_else('C02_AUTH', None)
+max_carbon = env_or_else('MIN_CARBON', DEFAULT_MIN_CARBON)
+min_carbon = env_or_else('MAX_CARBON', DEFAULT_MAX_CARBON)
 
+
+# Convenience function to interact with the mongodb
 def get_effect_type():
     return states.find_one({'name':'effect_type'})['state']
 
@@ -169,7 +178,7 @@ def run_game(speed, n_tours=1, ip=None, b=None):
             except Exception as e:
                 print(e)
 
-def get_carbon_color(c02auth=c02auth, carbon_scaling=500):
+def get_carbon_color(c02auth=c02auth, max_carbon=max_carbon, min_carbon=min_carbon):
     g.carbon_time = datetime.now()
     response = req.get('https://api.co2signal.com/v1/latest?countryCode=DK', headers={'auth-token': c02auth})
     resp = response.json()
@@ -178,7 +187,8 @@ def get_carbon_color(c02auth=c02auth, carbon_scaling=500):
     set_carbon_state(data)
 
     carbon = data['carbonIntensity']
-    return carbon, min(carbon/carbon_scaling, 1.0)
+    scaled = min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0)
+    return carbon, scaled
 
 
 def carbon_color(c02auth=c02auth, b=None, ip=None, username=None, cmap='RdYlGn'):

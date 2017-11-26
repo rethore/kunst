@@ -16,7 +16,6 @@ db_state = mongo.state_db
 states = db_state.states
 
 ## Get environment variables
-env_or_else = lambda env, or_else: os.environ[env] if env in os.environ else or_else
 
 c02auth = env_or_else('C02_AUTH', None)
 data_dir = env_or_else('DATA_DIR', '/data/')
