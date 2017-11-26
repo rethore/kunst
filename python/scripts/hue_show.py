@@ -187,7 +187,7 @@ def get_carbon_color(c02auth=c02auth, max_carbon=max_carbon, min_carbon=min_carb
     set_carbon_state(data)
 
     carbon = data['carbonIntensity']
-    scaled = min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0)
+    scaled = min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0))
     return carbon, scaled
 
 
