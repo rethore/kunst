@@ -28,8 +28,8 @@ DEFAULT_MAX_CARBON = 500
 
 # Get options from environmental variables
 c02auth = env_or_else('C02_AUTH', None)
-max_carbon = env_or_else('MIN_CARBON', DEFAULT_MIN_CARBON)
-min_carbon = env_or_else('MAX_CARBON', DEFAULT_MAX_CARBON)
+MAX_CARBON = env_or_else('MAX_CARBON', DEFAULT_MAX_CARBON)
+MIN_CARBON = env_or_else('MIN_CARBON', DEFAULT_MIN_CARBON)
 
 
 # Convenience function to interact with the mongodb
@@ -178,7 +178,7 @@ def run_game(speed, n_tours=1, ip=None, b=None):
             except Exception as e:
                 print(e)
 
-def get_carbon_color(c02auth=c02auth, max_carbon=max_carbon, min_carbon=min_carbon):
+def get_carbon_color(c02auth=c02auth, max_carbon=MAX_CARBON, min_carbon=MIN_CARBON):
     g.carbon_time = datetime.now()
     response = req.get('https://api.co2signal.com/v1/latest?countryCode=DK', headers={'auth-token': c02auth})
     resp = response.json()
@@ -187,7 +187,7 @@ def get_carbon_color(c02auth=c02auth, max_carbon=max_carbon, min_carbon=min_carb
     set_carbon_state(data)
 
     carbon = data['carbonIntensity']
-    scaled = min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0))
+    scaled = max(0.0, min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0)))
     return carbon, scaled
 
 
