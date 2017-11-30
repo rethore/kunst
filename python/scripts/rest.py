@@ -86,7 +86,10 @@ def on():
     for i in range(4):
         for j in range(19):
             name = 'P%d'%(j+1)
-            b.lights_by_name[name].on = True
+            if name in b.lights_by_name:
+                b.lights_by_name[name].on = True
+            else:
+                print('missing:', name)
             sleep(0.1)
         normal(b)
         time.sleep(0.5)

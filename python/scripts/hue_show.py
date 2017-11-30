@@ -23,13 +23,13 @@ states = db_state.states
 c = Converter()
 mapxy = lambda colormap: lambda val: c.rgbToCIE1931(*plt.get_cmap(colormap)(val)[:3])
 
-DEFAULT_MIN_CARBON = 150
-DEFAULT_MAX_CARBON = 500
+DEFAULT_MIN_CARBON = 150.0
+DEFAULT_MAX_CARBON = 500.0
 
 # Get options from environmental variables
 c02auth = env_or_else('C02_AUTH', None)
-MAX_CARBON = env_or_else('MAX_CARBON', DEFAULT_MAX_CARBON)
-MIN_CARBON = env_or_else('MIN_CARBON', DEFAULT_MIN_CARBON)
+MAX_CARBON = float(env_or_else('MAX_CARBON', DEFAULT_MAX_CARBON))
+MIN_CARBON = float(env_or_else('MIN_CARBON', DEFAULT_MIN_CARBON))
 
 
 # Convenience function to interact with the mongodb
@@ -70,12 +70,15 @@ def check_state(b, DT=0.1):
     shuffle(x)
     for i in x:
         name = 'P%d'%(i+1)
-        l = b.lights_by_name[name]
-        if not is_in_state(name):
-            set_xy(name, c.rgbToCIE1931(1., 1., 1.))
-            l.brightness = 254
-        l.xy =get_xy(name)
-        sleep(DT)
+        if name in b.lights_by_name:
+            l = b.lights_by_name[name]
+            if not is_in_state(name):
+                set_xy(name, c.rgbToCIE1931(1., 1., 1.))
+                l.brightness = 254
+            l.xy =get_xy(name)
+            sleep(DT)
+        else:
+            print('Missing:', name)
 
 def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     l.on = True
@@ -90,7 +93,10 @@ def all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     #for i in range(4):
     for j in range(19):
         name = 'P%d'%(j+1)
-        rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
+        if name in b.lights_by_name:
+            rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
+        else:
+            print('missing:', name)
         #sleep(0.5)
 
 def normal(b, DT=0.01):
