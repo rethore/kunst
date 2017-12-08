@@ -83,15 +83,6 @@ def check_state(b, DT=0.1):
     x = list(range(19))
     shuffle(x)
     for i in x:
-<<<<<<< HEAD
-        name = 'P%d' % (i + 1)
-        l = b.lights_by_name[name]
-        if not is_in_state(name):
-            set_xy(name, c.rgbToCIE1931(1., 1., 1.))
-            l.brightness = 254
-        l.xy = get_xy(name)
-        sleep(DT)
-=======
         name = 'P%d'%(i+1)
         if name in b.lights_by_name:
             l = b.lights_by_name[name]
@@ -102,8 +93,6 @@ def check_state(b, DT=0.1):
             sleep(DT)
         else:
             print('Missing:', name)
->>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
-
 
 def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     l.on = True
@@ -117,19 +106,12 @@ def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
 def all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     # for i in range(4):
     for j in range(19):
-<<<<<<< HEAD
-        name = 'P%d' % (j + 1)
-        rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
-        # sleep(0.5)
-
-=======
         name = 'P%d'%(j+1)
         if name in b.lights_by_name:
             rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
         else:
             print('missing:', name)
         #sleep(0.5)
->>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
 
 def normal(b, DT=0.01):
     all_rgb(b, 1.0, 1.0, 1.0, DT)
@@ -217,12 +199,8 @@ def run_game(speed, n_tours=1, ip=None, b=None):
             except Exception as e:
                 print(e)
 
-<<<<<<< HEAD
 
-def get_carbon_color(c02auth=c02auth, max_carbon=max_carbon, min_carbon=min_carbon):
-=======
 def get_carbon_color(c02auth=c02auth, max_carbon=MAX_CARBON, min_carbon=MIN_CARBON):
->>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
     g.carbon_time = datetime.now()
     response = req.get('https://api.co2signal.com/v1/latest?countryCode=DK', headers={'auth-token': c02auth})
     resp = response.json()
@@ -231,7 +209,6 @@ def get_carbon_color(c02auth=c02auth, max_carbon=MAX_CARBON, min_carbon=MIN_CARB
     set_carbon_state(data)
 
     carbon = data['carbonIntensity']
-<<<<<<< HEAD
     scaled = min(((carbon - min_carbon) / (max_carbon - min_carbon), 1.0))
 =======
     scaled = max(0.0, min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0)))
