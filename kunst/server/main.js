@@ -3,7 +3,9 @@ import { Hue } from '../imports/api/hue.js';
 import { HTTP } from 'meteor/http';
 
 //const IP = 'ip322.alb283.cust.comxnet.dk:6785';
-const IP = 'python:6001'
+
+const IP = process.env.API_URL;
+console.log('API', IP);
 
 Meteor.publish('hue', function hue() {
     return Hue.find();
