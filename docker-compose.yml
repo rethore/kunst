@@ -7,22 +7,25 @@ services:
     #  dockerfile: Dockerfile
     ports:
       - "8180:3000"
-    links:
-      - mongo
-      - python
     environment:
       - MONGO_URL=mongodb://mongo
       - ROOT_URL=http://127.0.0.1:80
       - STARTUP_DELAY=10
+      - API_URL=traefik:80
     #  - MAIL_URL=smtp://some.mailserver.com:25
+    # volumes:
+    #   - ./kunst:/opt/meteor/dist/bundle
+    networks:
+      - db
+      - proxy
+    depends_on:
+      - mongo
 
-  python:
+  python: #REST backend
     image: piredtu/kunst_python
     #build:
     #  context: python
     #  dockerfile: Dockerfile
-    ports:
-      - "6001:6001"
     volumes:
       - ./python/data:/data
       - ./python/scripts:/app
@@ -36,8 +39,74 @@ services:
       - MIN_CARBON=150
       - MAX_CARBON=500
       - DATA_DIR=/data/
+    networks:
+      - db
+      - proxy
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=python"
+      - "traefik.frontend.rule=Host:python.docker.localhost"
+      - "traefik.port=6001"
+    restart: always
 
   mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
+    networks:
+      - db
+
+  # nginx: #Proxy
+  #   image: "nginx:1.13.5"
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ./nginx:/etc/nginx/conf.d
+  #   networks:
+  #     - proxy
+
+  # whoami:
+  #   image: emilevauge/whoami
+  #   networks:
+  #     - proxy
+  #   labels:
+  #     - "traefik.backend=whoami"
+  #     - "traefik.frontend.rule=Host:whoami.docker.localhost"
+
+  traefik: #Proxy
+    image: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.toml:/etc/traefik/traefik.toml:ro
+      #- ./traefik/acme:/etc/traefik/acme
+    ports:
+     - "8887:80"
+     - "8080:8080"
+     #- "443:443"
+    networks:
+      - proxy
+    restart: always
+
+  jupyter:
+    image: jupyter/datascience-notebook
+    ports:
+      - 8888:8888
+    environment:
+      - GRANT_SUDO=yes
+    volumes:
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./python:/home/jovyan/work/python
+    command:
+      start-notebook.sh
+      --NotebookApp.token=''
+    networks:
+      - db
+      - proxy
+
+networks:
+  db:
+    driver: bridge
+  proxy:
+    driver: bridge

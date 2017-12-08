@@ -1,5 +1,5 @@
 build:
-	sudo docker build -t piredtu/kunst_meteor meteor
+	sudo docker build -t piredtu/kunst_meteor kunst
 	sudo docker build -t piredtu/kunst_python python
 
 push:

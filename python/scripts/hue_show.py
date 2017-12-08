@@ -21,7 +21,10 @@ db_state = mongo.state_db
 states = db_state.states
 
 c = Converter()
-mapxy = lambda colormap: lambda val: c.rgbToCIE1931(*plt.get_cmap(colormap)(val)[:3])
+
+
+def mapxy(colormap): return lambda val: c.rgbToCIE1931(*plt.get_cmap(colormap)(val)[:3])
+
 
 DEFAULT_MIN_CARBON = 150.0
 DEFAULT_MAX_CARBON = 500.0
@@ -34,41 +37,61 @@ MIN_CARBON = float(env_or_else('MIN_CARBON', DEFAULT_MIN_CARBON))
 
 # Convenience function to interact with the mongodb
 def get_effect_type():
-    return states.find_one({'name':'effect_type'})['state']
+    return states.find_one({'name': 'effect_type'})['state']
+
 
 def set_effect_type(effect_type):
-    return states.find_one_and_update({'name':'effect_type'}, {"$set": {'state':effect_type}}, upsert=True)
+    return states.find_one_and_update({'name': 'effect_type'}, {"$set": {'state': effect_type}}, upsert=True)
+
 
 def get_carbon_state():
-    return states.find_one({'name':'carbon'})
+    return states.find_one({'name': 'carbon'})
+
 
 def set_carbon_state(data):
-    return states.find_one_and_update({'name':'carbon'}, {"$set": data}, upsert=True)
+    return states.find_one_and_update({'name': 'carbon'}, {"$set": data}, upsert=True)
+
 
 def set_state(name, key, value):
-    states.find_one_and_update({'name':name}, {"$set": {key:value}}, upsert=True)
+    states.find_one_and_update(
+        {'name': name}, {"$set": {key: value}}, upsert=True)
+
 
 def set_xy(name, xy):
     set_state(name, 'xy', xy)
 
+
 def get_state(name):
-    return states.find_one({'name':name})
+    return states.find_one({'name': name})
+
 
 def get_xy(name):
     return get_state(name)['xy']
 
+
 def clean_state():
     for i in range(19):
-        name = 'P%d'%(i+1)
+        name = 'P%d' % (i + 1)
         states.delete_many({'name': name})
 
+
 def is_in_state(name):
-    return states.find({'name':name}).count() > 0
+    return states.find({'name': name}).count() > 0
+
 
 def check_state(b, DT=0.1):
     x = list(range(19))
     shuffle(x)
     for i in x:
+<<<<<<< HEAD
+        name = 'P%d' % (i + 1)
+        l = b.lights_by_name[name]
+        if not is_in_state(name):
+            set_xy(name, c.rgbToCIE1931(1., 1., 1.))
+            l.brightness = 254
+        l.xy = get_xy(name)
+        sleep(DT)
+=======
         name = 'P%d'%(i+1)
         if name in b.lights_by_name:
             l = b.lights_by_name[name]
@@ -79,6 +102,8 @@ def check_state(b, DT=0.1):
             sleep(DT)
         else:
             print('Missing:', name)
+>>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
+
 
 def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
     l.on = True
@@ -90,17 +115,25 @@ def rgbl(l, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
 
 
 def all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.01):
-    #for i in range(4):
+    # for i in range(4):
     for j in range(19):
+<<<<<<< HEAD
+        name = 'P%d' % (j + 1)
+        rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
+        # sleep(0.5)
+
+=======
         name = 'P%d'%(j+1)
         if name in b.lights_by_name:
             rgbl(b.lights_by_name[name], R, G, B, transitiontime, brightness, DT)
         else:
             print('missing:', name)
         #sleep(0.5)
+>>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
 
 def normal(b, DT=0.01):
     all_rgb(b, 1.0, 1.0, 1.0, DT)
+
 
 def init_bridge(ip=None, username=None):
     if ip == None:
@@ -108,9 +141,9 @@ def init_bridge(ip=None, username=None):
         selected = [x for x in bridges if '273a83' in x['id']][0]
         ip = selected['internalipaddress']
         print(selected)
-    b = Bridge(ip, username) # Enter bridge IP here.
+    b = Bridge(ip, username)  # Enter bridge IP here.
 
-    #If running for the first time, press button on bridge and run with b.connect() uncommented
+    # If running for the first time, press button on bridge and run with b.connect() uncommented
     b.connect()
 
     try:
@@ -118,7 +151,6 @@ def init_bridge(ip=None, username=None):
     except:
         lights = b.lights_by_name
     return b
-
 
 
 def show(data, ip=None, cmap='hot', dt=0.01, b=None):
@@ -133,8 +165,8 @@ def show(data, ip=None, cmap='hot', dt=0.01, b=None):
     j = 0
     P2H = {}
     for i in range(19):
-        n = 'P%d'%(i+1)
-        l =  b.lights_by_name[n]
+        n = 'P%d' % (i + 1)
+        l = b.lights_by_name[n]
         house_name = hs[j]
         j += 1
         if j >= len(hs):
@@ -145,16 +177,16 @@ def show(data, ip=None, cmap='hot', dt=0.01, b=None):
 
     # Run the show
     cmxy = mapxy(cmap)
-    for i in tqdm(range(30,70)):
+    for i in tqdm(range(30, 70)):
         for j in range(19):
             try:
-                name = 'P%d'%(j+1)
+                name = 'P%d' % (j + 1)
                 l = b.lights_by_name[name]
                 l.brightness = 254
                 l.transitiontime = 10.0
-                set_xy(name, cmxy(df[P2H[name]].iloc[i]/df['House 2'].max()))
-                l.xy = cmxy(df[P2H[name]].iloc[i]/df['House 2'].max())
-                #if not done[P2H[name]][i]:
+                set_xy(name, cmxy(df[P2H[name]].iloc[i] / df['House 2'].max()))
+                l.xy = cmxy(df[P2H[name]].iloc[i] / df['House 2'].max())
+                # if not done[P2H[name]][i]:
                 #    svalin_streams[P2H[name]].write(dict(x=i, y=df[P2H[name]].iloc[i]))
                 #    #print(P2H[name], dict(x=df.index[i], y=df[P2H[name]].iloc[i]))
                 #    done[P2H[name]][i] = True
@@ -168,23 +200,29 @@ def run_game(speed, n_tours=1, ip=None, b=None):
     if b == None:
         b = init_bridge(ip)
 
-    #speed = 10 #km/h
-    distance = 7 #m between each lamp
-    time = 7 / (speed * 1E3 / (60*60))
-    print("To run %3.2f km/h, the time between each lamp has to be %3.2f sec"%(speed, time))
+    # speed = 10 #km/h
+    distance = 7  # m between each lamp
+    time = 7 / (speed * 1E3 / (60 * 60))
+    print("To run %3.2f km/h, the time between each lamp has to be %3.2f sec" %
+          (speed, time))
     for i in range(n_tours):
         for n in range(19):
             try:
-                name = "P%d"%(n+1)
+                name = "P%d" % (n + 1)
                 l = b.lights_by_name[name]
-                rgbl(l, 1.0,0.0,0.0, brightness=254)
+                rgbl(l, 1.0, 0.0, 0.0, brightness=254)
                 sleep(time)
-                rgbl(l, 1.,1.,1., brightness=254)
+                rgbl(l, 1., 1., 1., brightness=254)
                 sleep(0.1)
             except Exception as e:
                 print(e)
 
+<<<<<<< HEAD
+
+def get_carbon_color(c02auth=c02auth, max_carbon=max_carbon, min_carbon=min_carbon):
+=======
 def get_carbon_color(c02auth=c02auth, max_carbon=MAX_CARBON, min_carbon=MIN_CARBON):
+>>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
     g.carbon_time = datetime.now()
     response = req.get('https://api.co2signal.com/v1/latest?countryCode=DK', headers={'auth-token': c02auth})
     resp = response.json()
@@ -193,7 +231,11 @@ def get_carbon_color(c02auth=c02auth, max_carbon=MAX_CARBON, min_carbon=MIN_CARB
     set_carbon_state(data)
 
     carbon = data['carbonIntensity']
+<<<<<<< HEAD
+    scaled = min(((carbon - min_carbon) / (max_carbon - min_carbon), 1.0))
+=======
     scaled = max(0.0, min(((carbon - min_carbon)/(max_carbon - min_carbon), 1.0)))
+>>>>>>> 413575ae55a9b3cb30fe89a49683945be03f8d28
     return carbon, scaled
 
 
@@ -201,10 +243,11 @@ def carbon_color(c02auth=c02auth, b=None, ip=None, username=None, cmap='RdYlGn')
     if b == None:
         b = init_bridge(ip, username)
     carbon, carbon_scaled = get_carbon_color(c02auth)
-    R, G, B, dumb = plt.get_cmap(cmap)(1.0-carbon_scaled)
+    R, G, B, dumb = plt.get_cmap(cmap)(1.0 - carbon_scaled)
     all_rgb(b, R, G, B, transitiontime=0.1, brightness=254, DT=0.5)
     print('carbon', carbon, carbon_scaled)
     return carbon, carbon_scaled
+
 
 def wave_effect(hn):
     """Make a wave effect starting from a house number
@@ -214,19 +257,20 @@ def wave_effect(hn):
         house number
     """
     # propagation speed
-    speed = 20 # m/s
-    distance = 7 #m between each lamp
-    time = 7 / (speed * 1E3 / (60*60))
+    speed = 20  # m/s
+    distance = 7  # m between each lamp
+    time = 7 / (speed * 1E3 / (60 * 60))
     for n in range(9):
         try:
-            name = "P%d"%((hn+2*n+1)%(19))
+            name = "P%d" % ((hn + 2 * n + 1) % (19))
             l = b.lights_by_name[name]
-            rgbl(l, 1.0,0.0,0.0, brightness=254)
+            rgbl(l, 1.0, 0.0, 0.0, brightness=254)
             sleep(time)
-            rgbl(l, 1.,1.,1., brightness=254)
+            rgbl(l, 1., 1., 1., brightness=254)
             sleep(0.1)
         except Exception as e:
             print(e)
+
 
 @click.command()
 @click.option('--data', help='CSV file of the house solar production')
