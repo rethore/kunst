@@ -37,7 +37,7 @@ services:
       - SUNNY_PASSWORD=${SUNNY_PASSWORD}
       - C02_AUTH=${C02_AUTH}
       - MIN_CARBON=150
-      - MAX_CARBON=500
+      - MAX_CARBON=380
       - DATA_DIR=/data/
     networks:
       - db
