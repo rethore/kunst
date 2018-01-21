@@ -1,3 +1,4 @@
+# Automatize different docker commands
 build:
 	sudo docker build -t piredtu/kunst_meteor kunst
 	sudo docker build -t piredtu/kunst_python python
