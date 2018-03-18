@@ -333,11 +333,15 @@ class Sunny(object):
 
 
 if __name__ == '__main__':
+
+    #sunny_login = env_or_else('SUNNY_LOGIN', None)
+    #sunny_password = env_or_else('SUNNY_PASSWORD', None)
+
     cdir = os.path.dirname(os.path.realpath(__file__))
     with open(cdir+'/.sunny_cred', 'r') as f:
         cred = json.load(f)
 
-    s = Sunny(login = cred['login'], password = cred['password'])
+    s = Sunny(login = sunny_login, password = sunny_password)
 
     df = s.download_all()
     s.close()
